@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo:4.1
+    restart: always
+    volumes:
+      - ./mdb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:
+    stdin_open: true  # -i
+    tty: true         # -t
+    ports:
+      - "27017:27017"
+
+  test-forms:
+    stdin_open: true  # -i
+    tty: true         # -t
+    build:
+      context: .
+      network: host
+    image: python3.8.test-forms
+    volumes:
+      - ./app:/app
+      - .env-test:/app/.env
+    environment:
+      - WEB_CONCURRENCY=1
+      - PORT=9525
+    ports:
+      - "9525:9525"
+    restart: 'always'

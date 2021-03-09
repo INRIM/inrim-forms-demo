@@ -8,5 +8,5 @@ if [ ! -f ".env-test" ]; then
     echo ".env-test File not found!"
     exit 0
 fi
-docker-compose -f docker-compose.yml stop
-docker-compose -f docker-compose.yml -p forms-inrim up -d --force-recreate --no-deps --build test-forms
+docker-compose -f docker-compose-dev.yml stop
+docker-compose -f docker-compose-dev.yml -p forms-inrim up --force-recreate --detach --remove-orphans

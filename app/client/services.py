@@ -132,7 +132,6 @@ async def submit_data_form(request: Request, id: str, id_submission: Optional[st
         templates, request, settings, schema=schema
     )
     data = page.compute_component_data(data)
-    logger.info(data)
     if not id_submission == "":
         submission = Submission(
             id=ObjectId(id_submission), form=ObjectId(id), data=data

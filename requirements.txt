@@ -12,7 +12,7 @@ jinja2
 aiofiles
 fastapi-crudrouter
 motor
-git+https://github.com/archetipo/python-formio-data.git@imp_resource_ext
+git+https://github.com/archetipo/python-formio-data.git@component_for_jinja2
 pytz
 json2html
 pandas

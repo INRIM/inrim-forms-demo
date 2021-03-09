@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+
+  forms:
+    stdin_open: true  # -i
+    tty: true         # -t
+    build:
+      context: .
+      network: host
+    image: python3.8.forms
+#    network_mode: "host"
+    volumes:
+      - ./app:/app
+      - .env:/app/.env
+    environment:
+      - WEB_CONCURRENCY=3
+      - PORT=8525
+    ports:
+      - "8525:8525"
+    restart: 'always'
+
+
+
+  test-forms:
+    stdin_open: true  # -i
+    tty: true         # -t
+    build:
+      context: .
+      network: host
+    image: python3.8.test-forms
+#    network_mode: "host"
+    volumes:
+      - ./app:/app
+      - .env-test:/app/.env
+    environment:
+      - WEB_CONCURRENCY=1
+      - PORT=9525
+    ports:
+      - "9525:9525"
+#    restart: 'always'

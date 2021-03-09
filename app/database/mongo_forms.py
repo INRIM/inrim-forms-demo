@@ -11,18 +11,12 @@ logger = logging.getLogger(__name__)
 
 client = AsyncIOMotorClient(
     get_settings().mongo_url,
-    # "docker.ininrim.it:27018",
     username=get_settings().mongo_user,
     password=get_settings().mongo_pass,
-    replicaset="rs",
+    replicaset=get_settings().mongo_replica,
     serverSelectionTimeoutMS=10, connectTimeoutMS=20000)
 
 engine = AIOEngine(motor_client=client, database=get_settings().mongo_db)
-
-
-# forms_collection = database.get_collection("forms")
-# submissions_collection = database.get_collection("submissions")
-
 
 def data_helper(d):
     if isinstance(d, bson.objectid.ObjectId) or isinstance(d, datetime):

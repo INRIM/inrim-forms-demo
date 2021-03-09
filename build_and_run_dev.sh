@@ -1,9 +1,4 @@
 #!/bin/bash
-if [ -d "$PWD/app/libs" ]; then
-      git -C "$PWD/app/libs" pull
-  else
-      git -C "$PWD/app" clone git@gitlab.ininrim.it:inrimsi/microservices-libs/base-libs.git libs
-fi
 if [ -d "$PWD/app/themes" ]; then
       git -C "$PWD/app/themes" pull
   else

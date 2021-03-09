@@ -41,7 +41,7 @@ async def mongo_forms(
     """
     Ritorna lo stato del servizio
     """
-    check_token_get_auth()
+    check_token_get_auth(authtoken)
     return retrieve_forms(form_type)
 
 
@@ -53,6 +53,7 @@ async def mongo_add_form(
     """
     Salva un form
     """
+    check_token_get_auth(authtoken)
     saved = await save_form_schema(form)
     return saved
 
@@ -67,6 +68,7 @@ async def mongo_form_id(
     """
     Ritorna lo stato del servizio
     """
+    check_token_get_auth(authtoken)
     form = await retrieve_form(id)
     return form
 
@@ -74,13 +76,12 @@ async def mongo_form_id(
 @mongoform_api.delete("/{id}", response_model=Form, tags=["inrim-forms"])
 async def delete_form_id(
         id: str,
-        skip: int = 0,
-        limit: int = 100,
         authtoken: str = Header(None)
 ):
     """
     Ritorna lo stato del servizio
     """
+    check_token_get_auth(authtoken)
     form = await delete_form(id)
     return form
 
@@ -96,7 +97,7 @@ async def mongo_submissions(
     """
     Ritorna lo stato del servizio
     """
-
+    check_token_get_auth(authtoken)
     return await retrieve_submissions(id)
 
 
@@ -111,7 +112,7 @@ async def mongo_submit(
     """
     Ritorna lo stato del servizio
     """
-
+    check_token_get_auth(authtoken)
     return await save_submission(submission)
 
 
@@ -127,7 +128,7 @@ async def mongo_submission(
     """
     Ritorna lo stato del servizio
     """
-
+    check_token_get_auth(authtoken)
     return await retrieve_submission(id)
 
 
@@ -143,6 +144,6 @@ async def mongo_submissions_resources(
     """
     Ritorna lo stato del servizio
     """
-    logger.info("get_submission")
 
+    check_token_get_auth(authtoken)
     return await retrieve_submissions(id)

@@ -12,7 +12,7 @@ logging.config.fileConfig(os.path.join(file_dir, 'logging.conf'), disable_existi
 class Settings(BaseSettings):
     app_name: str = "Awesome API"
     app_desc: str = ""
-    app_version:str = ""
+    app_version: str = ""
     base_url_ws: str = ""
     camunda_url: str = ""
     app_process: str = ""
@@ -47,11 +47,17 @@ class SettingsApp(Settings):
     mongo_user: str = ""
     mongo_pass: str = ""
     mongo_db: str = ""
+    mongo_replica: str = ""
     server_datetime_mask: str = ""
     server_date_mask = ""
     ui_datetime_mask: str = ""
     ui_date_mask = ""
     time_zone: str = ""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.mongo_replica == "":
+            self.mongo_replica = None
 
     def get_sevice_dict(self, service_name):
         res = {}

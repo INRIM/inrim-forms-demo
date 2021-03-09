@@ -6,7 +6,7 @@ from bson import ObjectId
 sys.path.append("..")
 import requests
 
-from libs.services.utils_for_service import *
+from .utils_for_service import *
 from database.mongo_forms import *
 from database.models import *
 from database.mongo_forms_api import *

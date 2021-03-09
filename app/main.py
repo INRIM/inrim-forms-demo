@@ -9,12 +9,10 @@ import requests
 from fastapi import FastAPI, Request, Header, HTTPException, Depends
 from fastapi.responses import HTMLResponse
 
-from services import *
 from models import *
-from datetime import *
 import time as time_
 from settings import get_settings
-from libs.services.utils_for_service import *
+from client.utils_for_service import *
 
 from fastapi.staticfiles import StaticFiles
 

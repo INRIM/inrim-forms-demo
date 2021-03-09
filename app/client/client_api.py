@@ -1,7 +1,4 @@
-import sys
-
-sys.path.append("..")
-from fastapi.staticfiles import StaticFiles
+from .utils_for_service import *
 from fastapi.responses import HTMLResponse
 from .services import *
 import logging
@@ -9,9 +6,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 client_api = FastAPI()
-
-
-# client_api.mount("/static", StaticFiles(directory="themes/italia/static"), name="static")
 
 
 def check_token_get_auth(token: str):

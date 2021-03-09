@@ -1,12 +1,8 @@
-import sys
-from typing import Optional
-
 from starlette.responses import RedirectResponse
-
-sys.path.append("..")
-from fastapi.staticfiles import StaticFiles
+from .utils_for_service import *
 from fastapi.responses import HTMLResponse
 from .services import *
+
 import logging
 
 logger = logging.getLogger(__name__)

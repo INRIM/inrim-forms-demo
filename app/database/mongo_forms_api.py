@@ -2,8 +2,7 @@ import sys
 
 sys.path.append("..")
 from fastapi import FastAPI, Request, Header, HTTPException, Depends
-from libs.services.utils_for_service import UtilsForService
-from libs.services.utils_for_service import *
+from client.utils_for_service import *
 from .mongo_forms import *
 from .models import *
 

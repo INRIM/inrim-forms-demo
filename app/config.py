@@ -53,6 +53,7 @@ class SettingsApp(Settings):
     ui_datetime_mask: str = ""
     ui_date_mask = ""
     time_zone: str = ""
+    logo_img_url: str = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

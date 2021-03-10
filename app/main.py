@@ -90,7 +90,9 @@ async def log_requests(request: Request, call_next):
     process_time = (time_.time() - start_time) * 1000
     formatted_process_time = '{0:.2f}'.format(process_time)
     logger.info(f"rid={idem} completed_in={formatted_process_time}ms status_code={response.status_code}")
-
+    # print(request.headers)
+    if response.status_code == 404:
+        return RedirectResponse(request.headers.get('referer'))
     return response
 
 

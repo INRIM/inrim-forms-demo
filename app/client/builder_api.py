@@ -202,6 +202,8 @@ async def list_submission(
     Ritorna la lista dei forms
     """
     check_token_get_auth(authtoken)
+    if not id_form or id_form == "":
+        return await builder_iframe(request)
     page = await get_table_submissions(request, id_form, url_path="/builder/form/")
     page.beforerows.append(form_builder_tabs(request, id_form=id_form))
     return page.render_page(
@@ -231,6 +233,8 @@ async def form_submitted(
     Ritorna lo stato del servizio
     """
     check_token_get_auth(authtoken)
+    if not id_form or id_form == "":
+        return await builder_iframe(request)
     page = await get_form_page(request, id_form, id_submission, url_path="/builder/form/")
     page.beforerows.append(form_builder_tabs(request, id_form=id_form, id_submission=id_submission))
     return page.render_page(

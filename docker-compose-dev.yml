@@ -13,7 +13,7 @@ services:
     stdin_open: true  # -i
     tty: true         # -t
     ports:
-      - "27021:27021"
+      - "27021:27017"
 
   test-forms:
     stdin_open: true  # -i
@@ -31,4 +31,4 @@ services:
     ports:
       - "9525:9525"
     restart: 'always'
-#    network_mode: "host"
+    network_mode: "host"

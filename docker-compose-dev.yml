@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  mongo:
+  test-form-mongo:
     image: mongo:4.1
     restart: always
     volumes:

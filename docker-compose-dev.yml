@@ -31,4 +31,4 @@ services:
     ports:
       - "9525:9525"
     restart: 'always'
-    network_mode: "host"
+#    network_mode: "host"

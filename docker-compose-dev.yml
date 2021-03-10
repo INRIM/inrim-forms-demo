@@ -34,7 +34,7 @@ services:
     network_mode: "host"
 
 
-  mongo-express:
+  test-forms-mongo-express:
     image: mongo-express
     environment:
       - ME_CONFIG_MONGODB_SERVER=test-form-mongo

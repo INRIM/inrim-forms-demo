@@ -37,13 +37,11 @@ services:
   test-forms-mongo-express:
     image: mongo-express
     environment:
-      - ME_CONFIG_MONGODB_SERVER=test-form-mongo
+      - ME_CONFIG_MONGODB_SERVER=docker.ininrim.it
       - ME_CONFIG_MONGODB_PORT=27021
       - VCAP_APP_PORT=30001
       - ME_CONFIG_OPTIONS_EDITORTHEME=night
-#    network_mode: "host"
+    network_mode: "host"
     ports:
       - "30001:30001"
     restart: always
-    links:
-      - test-form-mongo

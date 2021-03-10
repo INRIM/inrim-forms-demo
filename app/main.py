@@ -13,11 +13,13 @@ from models import *
 import time as time_
 from settings import get_settings
 from client.utils_for_service import *
+from client.services import *
 
 from fastapi.staticfiles import StaticFiles
 
 from client.client_api import client_api
 from client.builder_api import builder_api
+from fastapi.responses import RedirectResponse
 
 logger = logging.getLogger(__name__)
 
@@ -92,12 +94,12 @@ async def log_requests(request: Request, call_next):
     return response
 
 
-@app.get("/", tags=["base"])
-async def service_status():
-    """
-    Ritorna lo stato del servizio
-    """
-    return {"status": "live"}
+# @app.get("/", tags=["base"])
+# async def service_status():
+#     """
+#     Ritorna lo stato del servizio
+#     """
+#     return {"status": "live"}
 
 
 @app.post(
@@ -114,6 +116,10 @@ async def genera_token(tokendata: Token):
     return {"token": token_str}
 
 
-@app.get("/test/{id}", response_class=HTMLResponse)
-async def read_test(request: Request, id: str):
-    return templates.TemplateResponse("item.html", {"request": request, "id": id})
+@app.get("/", tags=["base"])
+async def init(
+        request: Request,
+        authtoken: str = Header(None)
+):
+    await check_and_init_db()
+    return RedirectResponse("/builder/forms")

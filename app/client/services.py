@@ -10,7 +10,6 @@ from .utils_for_service import *
 from database.mongo_forms import *
 from database.models import *
 from database.mongo_forms_api import *
-from database.mongo_forms_api import *
 from .base_setting import *
 from fastapi import FastAPI, Request, Header, HTTPException, Depends
 from themes.server.main.components.widgets_table_form import TableFormWidget
@@ -250,3 +249,19 @@ async def survey_rows(request: Request, key: str, id_form: str, id_submission: s
         page.load_data(schema_data['data'])
     res = page.survey_rows(key, render=True)
     return res
+
+
+async def check_and_init_db():
+    forms = await retrieve_all_forms()
+    if not forms:
+        login = {
+            "name": "login",
+            "title": "Login",
+            "components": [{"label": "Utente", "tableView": "true", "key": "uid", "type": "textfield", "input": "true"},
+                           {"label": "Password", "tableView": "false", "key": "password", "type": "password",
+                            "input": "true", "protected": "true"},
+                           {"type": "button", "label": "Submit", "key": "submit", "disableOnInvalid": "true",
+                            "input": "true", "tableView": "false"}]
+        }
+        form = Form(**login)
+        saved = await mongo_add_form(form)

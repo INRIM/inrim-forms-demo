@@ -18,6 +18,7 @@ client = AsyncIOMotorClient(
 
 engine = AIOEngine(motor_client=client, database=get_settings().mongo_db)
 
+
 def data_helper(d):
     if isinstance(d, bson.objectid.ObjectId) or isinstance(d, datetime):
         return str(d)
@@ -92,3 +93,13 @@ async def retrieve_submission(data_id):
 
 async def save_submission(schema: Submission):
     return await engine.save(schema)
+
+
+async def retrieve_all_forms():
+    submissions = await engine.find(Form, sort=Form.id)
+    return submissions
+
+
+async def retrieve_all_submissions():
+    submissions = await engine.find(Submission, sort=Submission.id)
+    return submissions

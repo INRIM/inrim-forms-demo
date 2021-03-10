@@ -146,3 +146,36 @@ async def mongo_submissions_resources(
 
     check_token_get_auth(authtoken)
     return await retrieve_submissions(id)
+
+
+@mongoform_api.get("/all-forms",
+                   response_model=ListSubmission,
+                   tags=["inrim-forms"])
+async def mongo_all_forms(
+        id: str,
+        skip: int = 0,
+        limit: int = 100,
+        authtoken: str = Header(None)
+):
+    """
+    Ritorna lo stato del servizio
+    """
+
+    check_token_get_auth(authtoken)
+    return await retrieve_all_forms()
+
+@mongoform_api.get("/all-submissions",
+                   response_model=ListSubmission,
+                   tags=["inrim-forms"])
+async def mongo_all_submissions(
+        id: str,
+        skip: int = 0,
+        limit: int = 100,
+        authtoken: str = Header(None)
+):
+    """
+    Ritorna lo stato del servizio
+    """
+
+    check_token_get_auth(authtoken)
+    return await retrieve_all_submissions()

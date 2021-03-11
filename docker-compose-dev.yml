@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  test-form-mongo:
+  testformmongo:
     image: mongo:4.1
     restart: always
     volumes:
@@ -31,17 +31,20 @@ services:
     ports:
       - "9525:9525"
     restart: 'always'
-    network_mode: "host"
-
+#    network_mode: "host"
+    links:
+      - testformmongo
 
   test-forms-mongo-express:
     image: mongo-express
     environment:
-      - ME_CONFIG_MONGODB_SERVER=docker.ininrim.it
-      - ME_CONFIG_MONGODB_PORT=27021
+      - ME_CONFIG_MONGODB_SERVER=testformmongo
+      - ME_CONFIG_MONGODB_PORT=27017
       - VCAP_APP_PORT=30001
       - ME_CONFIG_OPTIONS_EDITORTHEME=night
-    network_mode: "host"
+#    network_mode: "host"
     ports:
       - "30001:30001"
     restart: always
+    links:
+      - testformmongo

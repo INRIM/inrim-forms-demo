@@ -1,9 +1,10 @@
-# Forms Demo Italia Theme 
+# Forms Demo Italia Theme - WIP
 
 Forms Demo is a Demo project to test builder and render with CRUD Api that implement italian [AGID Theme](https://github.com/italia/bootstrap-italia/) 
 
-Thi project at build time download and add the repo [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
+This project at build time download and add the repo [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
 
+Project is in WIP
 
 ## Features
 

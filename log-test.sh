@@ -1,2 +1,2 @@
 #!/bin/bash
-docker logs --follow forms-inrim_test-forms_1
+docker logs --follow inrim-forms-demo_test-forms_1

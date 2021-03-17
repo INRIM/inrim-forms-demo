@@ -10,4 +10,4 @@ if [ ! -f ".env-test" ]; then
     exit 0
 fi
 docker-compose -f docker-compose-dev.yml stop
-docker-compose -f docker-compose-dev.yml -p forms-inrim up --force-recreate --detach --remove-orphans
+docker-compose -f docker-compose-dev.yml -p inrim-forms-demo up --force-recreate --detach --remove-orphans

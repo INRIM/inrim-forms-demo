@@ -1,2 +1,2 @@
 #!/bin/bash
-docker exec -ti forms-inrim_test-forms_1 /bin/sh; exit
+docker exec -ti inrim-forms-demo_test-forms_1 /bin/sh; exit

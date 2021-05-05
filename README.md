@@ -38,7 +38,7 @@ Project is in WIP
 
 ## Depends on
 
-* [FastApi](https://https://fastapi.tiangolo.com/.tiangolo.com/) - The Api framework
+* [FastApi](https://fastapi.tiangolo.com) - The Api framework
 * [ODMantic](https://github.com/art049/odmantic) Asynchronous ODM(Object Document Mapper) for MongoDB
 * [Jinja](https://github.com/pallets/jinja) - Jinja is a fast, expressive, extensible templating engine 
 * [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)

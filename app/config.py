@@ -60,7 +60,7 @@ class SettingsApp(Settings):
         if self.mongo_replica == "":
             self.mongo_replica = None
 
-    def get_sevice_dict(self, service_name):
+    def get_service_dict(self, service_name):
         res = {}
         data = self.dict()
         for item in self.dict():

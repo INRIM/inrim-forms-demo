@@ -36,7 +36,7 @@ async def get_forms(request: Request, url_path="/") -> TableWidget:
     settings = get_settings()
     # schema = await formio_api.get_forms("form")
     schema = await retrieve_forms("form")
-    data = get_schema_form_data_tabe(schema, fields=["id", "title"])
+    data = get_schema_form_data_table(schema, fields=["id", "title"])
     page = TableWidget(
         templates, request, settings, schema=data, resource_ext=get_ext_submission, base_path=url_path
     )
@@ -174,7 +174,7 @@ async def get_table_submissions(request: Request, id: str, url_path="/") -> Tabl
     settings = get_settings()
     form_schema = await mongo_form_id(id)
     schema = await mongo_submissions(id)
-    data = get_schema_form_data_tabe(schema, fields=["id", "data"], merge_field="data")
+    data = get_schema_form_data_table(schema, fields=["id", "data"], merge_field="data")
     page = TableFormWidget(
         templates, request, settings,
         schema=data, form_schema=data_helper(form_schema.dict()), resource_ext=get_ext_submission,

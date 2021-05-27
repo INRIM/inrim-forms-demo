@@ -34,7 +34,7 @@ def data_helper(d):
     return d
 
 
-def get_schema_form_data_tabe(list_data, fields=["_id"], merge_field=""):
+def get_schema_form_data_table(list_data, fields=["_id"], merge_field=""):
     new_list = []
     for i in list_data:
         new_list.append(data_helper_list(i.dict(), fields=fields, merge_field=merge_field))

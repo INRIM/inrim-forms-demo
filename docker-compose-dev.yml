@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+
+  testformmongo:
+    image: mongo:4.1
+    restart: always
+    volumes:
+      - ./mdb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:
+    stdin_open: true  # -i
+    tty: true         # -t
+    ports:
+      - "27021:27017"
+
+  test-forms:
+    stdin_open: true  # -i
+    tty: true         # -t
+    build:
+      context: .
+      network: host
+    image: python3.8.test-forms
+    volumes:
+      - ./app:/app
+      - .env-test:/app/.env
+    environment:
+      - WEB_CONCURRENCY=3
+      - PORT=9525
+    ports:
+      - "9525:9525"
+    restart: 'always'
+    links:
+      - testformmongo
+
+  test-forms-mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=testformmongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - VCAP_APP_PORT=30001
+      - ME_CONFIG_OPTIONS_EDITORTHEME=night
+    ports:
+      - "30001:30001"
+    restart: always
+    links:
+      - testformmongo

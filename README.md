@@ -4,8 +4,11 @@ Forms Demo is a Demo project to test builder and render with CRUD Api that imple
 
 This project at build time download and add the repo [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
 
-Project is in WIP
 
+> ⚠️ **SECURITY: Don't use thi project in production environment**
+> 
+> **This project is only for demo and testing purpose**
+ 
 ## Features
 
 - Design your form with Form.io builder for more info about Form.io see [Form.io homepage](https://www.form.io)
@@ -43,6 +46,10 @@ Project is in WIP
 * [Jinja](https://github.com/pallets/jinja) - Jinja is a fast, expressive, extensible templating engine 
 * [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
 
+Authors
+------------
+
+- Alessio Gerace
 
 ## License
 

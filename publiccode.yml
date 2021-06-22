@@ -61,6 +61,8 @@ it:
     cie: false
     pagopa: false
     spid: false
+  riuso:
+    codiceIPA: inrm
 legal:
   license: MIT
 localisation:

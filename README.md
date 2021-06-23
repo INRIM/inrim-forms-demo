@@ -5,7 +5,7 @@ Forms Demo is a Demo project to test builder and render with CRUD Api that imple
 This project at build time download and add the repo [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
 
 
-> ⚠️ **SECURITY: Don't use thi project in production environment**
+> ⚠️ **SECURITY: Don't use this project in production environment**
 > 
 > **This project is only for demo and testing purpose**
  
@@ -53,4 +53,4 @@ Authors
 
 ## License
 
-This project is covered by a [license MIT](https://github.com/INRIM/inrim-forms-demo/blob/master/LICENSE).
+This project is covered by a [MIT license](https://github.com/INRIM/inrim-forms-demo/blob/master/LICENSE).

@@ -50,6 +50,7 @@ Authors
 ------------
 
 - Alessio Gerace
+- Marco Coisson
 
 ## License
 

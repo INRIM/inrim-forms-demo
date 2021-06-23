@@ -54,3 +54,6 @@ Authors
 ## License
 
 This project is covered by a [license MIT](https://github.com/INRIM/inrim-forms-demo/blob/master/LICENSE).
+
+Edited by PD, now it's much better.
+

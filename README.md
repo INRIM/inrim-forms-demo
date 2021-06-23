@@ -50,6 +50,7 @@ Authors
 ------------
 
 - Alessio Gerace
+- Pinco Pallo
 
 ## License
 

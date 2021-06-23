@@ -14,6 +14,7 @@ This project at build time download and add the repo [Form Templates Italia Them
 - Design your form with Form.io builder for more info about Form.io see [Form.io homepage](https://www.form.io)
 - View Form, the form is server side rendered with jinja template
 - Add and Edit Data with yours forms
+- there are many more important features
 
 ## Build and Test
 

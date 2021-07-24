@@ -14,6 +14,10 @@ description:
       - MongoDb
     genericName: Inrim Forms Demo
     longDescription: |
+      Attenzione questo progetto e' stato sostituito da:
+
+      **[Service App](https://github.com/INRIM/service-app)**
+
       Progetto demo per la generazione di form "Drag&Drop" tramite formio.js
       builder.
 

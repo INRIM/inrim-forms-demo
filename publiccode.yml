@@ -1,81 +1,107 @@
 # This repository adheres to the publiccode.yml standard by including this
 # metadata file that makes public software easily discoverable.
-# More info at https://github.com/italia/publiccode.yml
+# More info at https://github.com/publiccodeyml/publiccode.yml
 
-publiccodeYmlVersion: '0'
-name: Inrim Forms Demo
-url: 'https://github.com/INRIM/inrim-forms-demo'
-softwareVersion: '3.0'
-releaseDate: '2026-08-26'
-developmentStatus: stable
-softwareType: standalone/web
-platforms:
-  - web
+publiccodeYmlVersion: '0.7'
 categories:
-  - it-development
   - application-development
+  - it-development
 dependsOn:
   open:
     - name: Service App
+      optional: false
       versionMin: '3.0'
-      optional: false
     - name: Docker
+      optional: false
       versionMin: '24.0'
-      optional: false
     - name: MongoDB
-      versionMin: '8.0.1'
       optional: false
+      versionMin: 8.0.1
     - name: Keycloak
-      versionMin: '26.0'
       optional: false
+      versionMin: '26.0'
 description:
   it:
-    shortDescription: Demo eseguibile di Service App 3.0 (ozon-env-app)
-    longDescription: |
-      Demo eseguibile di
-      **[Service App](https://github.com/INRIM/service-app)** 3.0
-      (`ozon-env-app`): un backend RAD multi-tenant che genera form
-      "Drag&Drop" con formio.js builder, le renderizza col tema Bootstrap
-      Italia e gestisce i dati su MongoDB.
+    documentation: 'https://github.com/INRIM/inrim-forms-demo/blob/master/demo/README.md'
+    features:
+      - >-
+        Form builder Drag&Drop (formio.js), per disegnare i moduli senza
+        scrivere codice;
+      - >-
+        Rendering dei moduli col tema Bootstrap Italia (Linee Guida di Design
+        per la P.A.);
+      - >-
+        Regole su dati e campi tramite json-logic, valutate lato server;
+      - >-
+        Persistenza dei dati su MongoDB, con CRUD generico generato dal modulo;
+      - >-
+        Autenticazione Keycloak OpenID Connect (Authorization Code, pattern
+        BFF), senza login locale;
+      - >-
+        Multi tenant per app_code. Un unico backend a supporto di piu'
+        applicazioni e frontend;
+      - >-
+        Sistema a plugin. Un'applicazione e' una cartella montata in
+        /plugins/<app_code>, installata all'avvio;
+      - >-
+        Regole di sicurezza per gruppo e per campo (ACL su model, campi e
+        record);
+      - >-
+        Servizi companion inclusi: invio mail, scheduler di calendario,
+        identity manager;
+      - >-
+        Stack Docker Compose completo, installato e avviato da un solo comando;
+    longDescription: >
+      **Inrim Forms Demo** e' la demo eseguibile di
+      [Service App](https://github.com/INRIM/service-app) 3.0
+      (`ozon-env-app`): un backend RAD multi tenant che genera moduli
+      "Drag&Drop" con formio.js builder, li renderizza col tema Bootstrap
+      Italia e ne gestisce i dati su MongoDB.
 
 
-      Un solo comando (`demo/run_demo.sh up`) installa e avvia l'intero
-      stack in Docker — Keycloak, MongoDB, backend, servizi companion
-      (mail-sender, calendar-scheduler, identity-manager) e web-client —
-      con un plugin di esempio gia' installato e quattro utenti di test.
-      Lo script clona da solo il repository Service App se non e' gia'
-      presente, genera i segreti locali, effettua il provisioning del realm
-      Keycloak e installa il plugin.
+      Un solo comando (`demo/run_demo.sh up`) installa e avvia l'intero stack
+      in Docker: Keycloak, MongoDB, backend, servizi companion e web client,
+      con un plugin di esempio gia' installato e quattro utenti di test. Lo
+      script clona da solo il repository Service App se non e' gia' presente,
+      genera i segreti locali, effettua il provisioning del realm Keycloak e
+      installa il plugin.
 
 
-      Il progetto mostra come strutturare un'applicazione sul backend:
-      un "plugin" e' una cartella con un manifest, lo schema delle form
-      (formato formio.js) e i dati di seed (voci di menu e azioni), montata
-      in `/plugins/<app_code>` e installata all'avvio.
+      Principali caratteristiche:
 
 
-      E' possibile:
+      - Form builder Drag&Drop (formio.js), per disegnare i moduli senza
+        scrivere codice;
 
-      1. implementare regole sui dati e sui campi tramite json-logic
+      - Rendering dei moduli col tema Bootstrap Italia (Linee Guida di Design
+        per la P.A.), responsive anche su dispositivi mobili;
 
-      2. autenticare gli utenti tramite Keycloak (OpenID Connect)
+      - Regole su dati e campi tramite json-logic, valutate lato server;
 
-      3. implementare regole di sicurezza per gruppo/ruolo
+      - Persistenza su MongoDB, con CRUD generico generato a partire dal
+        modulo disegnato;
 
-      4. servire piu' applicazioni (`app_code`) con un unico backend
+      - Autenticazione Keycloak OpenID Connect (Authorization Code, pattern
+        BFF): il frontend resta su una sola origin e non gestisce token;
+
+      - Multi tenant per `app_code`. Un unico backend serve piu' applicazioni,
+        ognuna col proprio frontend e i propri dati;
+
+      - Sistema a plugin. Un'applicazione e' una cartella con manifest, schema
+        dei moduli e dati di seed, montata in `/plugins/<app_code>` e
+        installata all'avvio;
+
+      - Regole di sicurezza per gruppo e per campo, con ACL su model, campi e
+        singoli record;
+
+      - Servizi companion inclusi: invio mail, scheduler di calendario e
+        identity manager;
+
+      - Stack Docker Compose completo, con installazione e avvio automatici.
+
 
       Il progetto e' a scopo di demo e di riferimento per chi costruisce
       applicazioni su Service App.
-    features:
-      - Form Builder Drag&Drop (formio.js)
-      - Tema Bootstrap Italia / linee guida design AGID
-      - Json-logic su dati e campi
-      - MongoDB
-      - Autenticazione Keycloak OpenID Connect (Authorization Code, pattern BFF)
-      - Multi-tenant per app_code
-      - Sistema a plugin su /plugins/<app_code>
-      - 'Servizi companion: mail-sender, calendar-scheduler, identity-manager'
-      - Stack Docker Compose con installazione e avvio automatici
     screenshots:
       - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/dashboard.png
@@ -85,22 +111,38 @@ description:
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/enter_data.png
       - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/view_edit_data.png
-organisation:
-  name: Istituto Nazionale di Ricerca Metrologica
-  uri: 'urn:x-italian-pa:inrm'
-legal:
-  license: MIT
-  mainCopyrightOwner: Istituto Nazionale di Ricerca Metrologica
-maintenance:
-  type: internal
-  contacts:
-    - name: Alessio Gerace
-      email: a.gerace@inrim.it
-      affiliation: inrim.it
+    shortDescription: >-
+      Demo eseguibile di Service App: form builder Drag&Drop, json-logic e
+      MongoDB.
+developmentStatus: stable
 intendedAudience:
   countries:
     - IT
+  scope:
+    - research
+    - science-and-technology
+landingURL: 'https://github.com/INRIM/inrim-forms-demo'
+legal:
+  license: MIT
+  mainCopyrightOwner: Istituto Nazionale di Ricerca Metrologica
 localisation:
   availableLanguages:
     - it
   localisationReady: false
+maintenance:
+  contacts:
+    - affiliation: inrim.it
+      email: a.gerace@inrim.it
+      name: Alessio Gerace
+  type: internal
+name: Inrim Forms Demo
+organisation:
+  name: Istituto Nazionale di Ricerca Metrologica
+  uri: 'urn:x-italian-pa:inrm'
+platforms:
+  - web
+releaseDate: '2026-08-26'
+roadmap: 'https://github.com/INRIM/inrim-forms-demo/issues'
+softwareType: standalone/web
+softwareVersion: '3.0'
+url: 'https://github.com/INRIM/inrim-forms-demo'

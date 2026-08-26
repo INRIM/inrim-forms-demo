@@ -1,6 +1,6 @@
 # Inrim Forms Demo
 
-Demo eseguibile di **[INRIM/service-app](https://github.com/INRIM/service-app)
+Demo eseguibile di **[INRIM/service-app](https://github.com/INRIM/service-app/tree/3.0)
 3.0** (`ozon-env-app`): backend RAD multi-tenant con form Form.io, CRUD
 generico su MongoDB, tema AGID/Bootstrap Italia e autenticazione Keycloak.
 

@@ -1,57 +1,96 @@
-# Forms Demo Italia Theme - WIP
+# Inrim Forms Demo
 
-Forms Demo is a Demo project to test builder and render with CRUD Api that implement Italian [AGID Theme](https://github.com/italia/bootstrap-italia/) 
+Demo eseguibile di **[INRIM/service-app](https://github.com/INRIM/service-app)
+3.0** (`ozon-env-app`): backend RAD multi-tenant con form Form.io, CRUD
+generico su MongoDB, tema AGID/Bootstrap Italia e autenticazione Keycloak.
 
-This project at build time download and add the repo [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
+Un solo comando tira su tutto lo stack — Keycloak, MongoDB, backend,
+companion service, web-client — con un plugin di esempio (`demo`) gia'
+installato e 4 utenti di test:
 
+```bash
+demo/run_demo.sh up
+```
 
-> ⚠️ **SECURITY: Don't use this project in production environment**
-> 
-> **This project is only for demo and testing purpose**
- 
-## Features
+Il repo contiene **solo** la demo (plugin, env, provisioning, orchestratore).
+I compose di backend e web-client stanno in `service-app`: `run_demo.sh` lo
+clona in `./service-app` — dentro questo repo, gitignorato — se non c'e'
+gia', e lo aggiorna con un fast-forward se c'e'. Non scrive niente fuori
+dalla root del repo e non serve avere niente dello stack preinstallato:
+basta clonare questo repo e lanciare lo script.
 
-- Design your form with Form.io builder for more info about Form.io see [Form.io homepage](https://www.form.io)
-- View Form, the form is server side rendered with jinja template
-- Add and Edit Data with yours forms
-- there are many more important features
+> La 1.x di questo progetto (Flask + form builder standalone) e' stata
+> sostituita da service-app; il codice storico resta nella storia git.
 
-## Build and Test
+## Requisiti
 
-- #### Config 
-    - create a copy of .env.template:
-    ```
-    cp .env.template  .env-test
-    ```
-      
-- #### Build and run      
-    ```
-    sh build_and_run_dev.sh
-    ```
+Docker Desktop attivo, piu' `git`, `curl`, `jq`, `openssl`. Le immagini
+arrivano da GHCR (`ghcr.io/inrim/ozon-env-app/*`, `ghcr.io/inrim/ozon-formio`),
+pubbliche: nessun `docker login`.
 
-- #### app  
-    ```
-     http://localhost:9525/
-    ```
-    open [Forms Demo](http://localhost:9525/) in your browser
-  
+## Comandi
 
-![Screen](gallery/design.png "Screen")
+```bash
+demo/run_demo.sh up       # installa (clone incluso) e avvia — idempotente
+demo/run_demo.sh status   # stato dei container
+demo/run_demo.sh down     # ferma i container (i dati restano nei volumi)
+demo/run_demo.sh reset    # ferma e cancella anche i dati (mongo/keycloak)
+demo/clean_demo.sh        # pulizia totale: container/volumi/immagini/orfani,
+                          # .env generati e segreti locali
+```
 
-![Screen](gallery/enter_data.png "Screen")
+Override utili (env):
 
-## Depends on
+| Variabile | Default | A cosa serve |
+|---|---|---|
+| `SERVICE_APP_DIR` | `demo/../service-app` (root del repo) | usare un checkout di service-app gia' esistente altrove |
+| `SERVICE_APP_REPO` | `https://github.com/INRIM/service-app.git` | fork/mirror |
+| `SERVICE_APP_REF` | `3.0` | branch o tag da clonare/aggiornare |
 
-* [FastApi](https://fastapi.tiangolo.com) - The Api framework
-* [ODMantic](https://github.com/art049/odmantic) Asynchronous ODM(Object Document Mapper) for MongoDB
-* [Jinja](https://github.com/pallets/jinja) - Jinja is a fast, expressive, extensible templating engine 
-* [Form Templates Italia Theme](https://github.com/INRIM/forms-theme-italia)
+## Cosa ottieni
 
-Authors
-------------
+| Cosa | URL | Credenziali |
+|---|---|---|
+| Web app | http://localhost:4200 | utenti demo, sotto |
+| Backend API | http://localhost:7999 | — |
+| Keycloak admin console | http://localhost:8082 | `admin` / password generata (stampata a fine run, salvata in `demo/.env.secrets`) |
 
-- Alessio Gerace
+Utenti demo (realm Keycloak `backend`), **username = password**: `admin`,
+`user`, `operator`, `manager`.
 
-## License
+## Struttura
 
-This project is covered by a [MIT license](https://github.com/INRIM/inrim-forms-demo/blob/master/LICENSE).
+```
+demo/
+├── plugin/                   il plugin "demo" montato in /plugins/demo
+│   ├── config.json           manifest (module_name, schema, datas)
+│   ├── schema/components.json  la form "Modulo Dati Persona"
+│   └── data/                 menu_group + action (list/form/save)
+├── .env.demo                 template env del backend (segnaposto, no segreti)
+├── .env.client-demo          template env del web-client
+├── docker-compose.demo.yml   override: aggiunge Keycloak + monta il plugin
+├── provision_keycloak.sh     realm + client web + client M2M + utenti
+├── seed_groups.py            gruppi group_users (user/operator/manager + M2M)
+├── run_demo.sh               orchestratore: clone, env, up, provisioning, seed
+├── clean_demo.sh             pulizia totale
+└── tests/                    test dello script di provisioning
+service-app/                  checkout di INRIM/service-app (clonato qui, gitignorato)
+gallery/                      screenshot
+```
+
+Dettagli su architettura, login BFF/Keycloak e porting del plugin:
+[`demo/README.md`](demo/README.md).
+
+## Segreti
+
+`run_demo.sh` genera `MONGO_PASS`, `SESSION_SECRET` e
+`KEYCLOAK_ADMIN_PASSWORD` al primo avvio e li salva in `demo/.env.secrets`
+(gitignorato), insieme ai secret dei client Keycloak ricavati dal
+provisioning. I file versionati (`demo/.env.demo`, `demo/.env.client-demo`)
+sono template con segnaposto: **non ci vanno segreti veri**. Gli `.env`
+operativi vengono scritti dentro il checkout locale di service-app
+(`service-app/backend/.env`, `service-app/app/.env`) e rigenerati a ogni run.
+
+## Licenza
+
+MIT — vedi [LICENSE](https://github.com/INRIM/inrim-forms-demo/blob/master/LICENSE).

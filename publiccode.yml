@@ -1,87 +1,106 @@
-# This repository adheres to the publiccode.yml standard by including this 
+# This repository adheres to the publiccode.yml standard by including this
 # metadata file that makes public software easily discoverable.
 # More info at https://github.com/italia/publiccode.yml
 
-publiccodeYmlVersion: '0.2'
+publiccodeYmlVersion: '0'
+name: Inrim Forms Demo
+url: 'https://github.com/INRIM/inrim-forms-demo'
+softwareVersion: '3.0'
+releaseDate: '2026-08-26'
+developmentStatus: stable
+softwareType: standalone/web
+platforms:
+  - web
 categories:
   - it-development
   - application-development
+dependsOn:
+  open:
+    - name: Service App
+      versionMin: '3.0'
+      optional: false
+    - name: Docker
+      versionMin: '24.0'
+      optional: false
+    - name: MongoDB
+      versionMin: '8.0.1'
+      optional: false
+    - name: Keycloak
+      versionMin: '26.0'
+      optional: false
 description:
   it:
-    features:
-      - Form Builder
-      - Json-logic
-      - MongoDb
-    genericName: Inrim Forms Demo
+    shortDescription: Demo eseguibile di Service App 3.0 (ozon-env-app)
     longDescription: |
-      Attenzione questo progetto e' stato sostituito da:
-
-      **[Service App](https://github.com/INRIM/service-app)**
-
-      Progetto demo per la generazione di form "Drag&Drop" tramite formio.js
-      builder.
-
-
-      Il sistema mette a disposizione un interfaccia per la composizione di form
-      tramite formio.js builder, implementato con 
+      Demo eseguibile di
+      **[Service App](https://github.com/INRIM/service-app)** 3.0
+      (`ozon-env-app`): un backend RAD multi-tenant che genera form
+      "Drag&Drop" con formio.js builder, le renderizza col tema Bootstrap
+      Italia e gestisce i dati su MongoDB.
 
 
-      formio.js.
+      Un solo comando (`demo/run_demo.sh up`) installa e avvia l'intero
+      stack in Docker — Keycloak, MongoDB, backend, servizi companion
+      (mail-sender, calendar-scheduler, identity-manager) e web-client —
+      con un plugin di esempio gia' installato e quattro utenti di test.
+      Lo script clona da solo il repository Service App se non e' gia'
+      presente, genera i segreti locali, effettua il provisioning del realm
+      Keycloak e installa il plugin.
 
 
-      Una volta disegnato e salvato il form il sistema lo renderizza utilizzando
-      il tema design bootstrap Italia.
+      Il progetto mostra come strutturare un'applicazione sul backend:
+      un "plugin" e' una cartella con un manifest, lo schema delle form
+      (formato formio.js) e i dati di seed (voci di menu e azioni), montata
+      in `/plugins/<app_code>` e installata all'avvio.
 
 
       E' possibile:
 
-      1.  implementare regole sui dati e sui campi tramite json-logic
+      1. implementare regole sui dati e sui campi tramite json-logic
 
-      2. Aggiungere un autenticazione esterna
+      2. autenticare gli utenti tramite Keycloak (OpenID Connect)
 
-      3. Implementare regole di sicurezza
+      3. implementare regole di sicurezza per gruppo/ruolo
 
-      Il progetto e' al solo scopo di demo e serve come testing della libreria
-      correlata **Form Templates Italia Theme**
+      4. servire piu' applicazioni (`app_code`) con un unico backend
+
+      Il progetto e' a scopo di demo e di riferimento per chi costruisce
+      applicazioni su Service App.
+    features:
+      - Form Builder Drag&Drop (formio.js)
+      - Tema Bootstrap Italia / linee guida design AGID
+      - Json-logic su dati e campi
+      - MongoDB
+      - Autenticazione Keycloak OpenID Connect (Authorization Code, pattern BFF)
+      - Multi-tenant per app_code
+      - Sistema a plugin su /plugins/<app_code>
+      - 'Servizi companion: mail-sender, calendar-scheduler, identity-manager'
+      - Stack Docker Compose con installazione e avvio automatici
     screenshots:
-      - |-
+      - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/design.png
-      - |-
+      - >-
+        https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/enter_data.png
+      - >-
+        https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/list_submissioins.png
+      - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/view_edit_data.png
-    shortDescription: Inrim form Demo
-developmentStatus: concept
-intendedAudience:
-  countries:
-    - it
-it:
-  conforme:
-    gdpr: false
-    lineeGuidaDesign: true
-    misureMinimeSicurezza: true
-    modelloInteroperabilita: true
-  countryExtensionVersion: '0.2'
-  piattaforme:
-    anpr: false
-    cie: false
-    pagopa: false
-    spid: false
-  riuso:
-    codiceIPA: inrm
+organisation:
+  name: Istituto Nazionale di Ricerca Metrologica
+  uri: 'urn:x-italian-pa:inrm'
 legal:
   license: MIT
-localisation:
-  availableLanguages:
-    - it
-  localisationReady: false
+  mainCopyrightOwner: Istituto Nazionale di Ricerca Metrologica
 maintenance:
   type: internal
   contacts:
     - name: Alessio Gerace
       email: a.gerace@inrim.it
       affiliation: inrim.it
-name: Inrim Forms Demo
-platforms:
-  - web
-releaseDate: '2021-03-09'
-softwareType: standalone/web
-url: 'https://github.com/INRIM/inrim-forms-demo'
+intendedAudience:
+  countries:
+    - IT
+localisation:
+  availableLanguages:
+    - it
+  localisationReady: false

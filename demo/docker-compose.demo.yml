@@ -1,0 +1,63 @@
+# Override della demo sopra service-app 3.0 (clonato in ../service-app da
+# demo/run_demo.sh). Fa due cose:
+#   1. aggiunge Keycloak, che backend/docker-compose.yml di service-app 3.0
+#      non definisce (dichiara solo il volume keycloak_data): la demo usa
+#      AUTH_MODE=keycloak, quindi il server IdP se lo porta dietro lei;
+#   2. monta il plugin "demo" in /plugins/demo e la cartella models/ dei
+#      servizi companion.
+#
+# I path sono assoluti via ${DEMO_DIR} (esportata da run_demo.sh): la project
+# directory di compose e' quella del PRIMO file -f, cioe' service-app/backend/,
+# quindi un path relativo qui punterebbe dentro il checkout di service-app.
+#
+# Uso: docker compose -p ozon-demo -f ../service-app/backend/docker-compose.yml \
+#        -f demo/docker-compose.demo.yml --env-file ../service-app/backend/.env up -d
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: ozon-env-keycloak
+    # start-dev = comodo per bootstrap/dev (H2 embedded). In produzione:
+    # `start` + DB esterno (KC_DB_*) + KC_HOSTNAME reale + TLS, non questo.
+    command: ["start-dev", "--http-port=8080"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?serve una password admin keycloak}
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      # Senza un hostname fisso, Keycloak costruisce `iss` dall'Host della
+      # richiesta: il browser (localhost:8082) ottiene un issuer, i
+      # container che chiamano keycloak:8080 ne ottengono un altro, e
+      # l'app — che confronta con KEYCLOAK_SERVER_URL_PUBLIC — rifiuta i
+      # token dei servizi M2M con "Invalid issuer".
+      KC_HOSTNAME: ${KEYCLOAK_SERVER_URL_PUBLIC:-http://localhost:8082}
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "false"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    ports:
+      - "${KEYCLOAK_PORT:-8082}:8080"
+    networks:
+      - ozon-network
+    restart: unless-stopped
+
+  app:
+    environment:
+      OZON_TOKEN_AUDIENCE: ${OZON_TOKEN_AUDIENCE:-demo}
+    depends_on:
+      - keycloak
+    volumes:
+      - ${DEMO_DIR:?serve DEMO_DIR assoluta (la esporta run_demo.sh)}/models:/models
+      - ${DEMO_DIR}/plugin:/plugins/demo:ro
+
+  mail-sender:
+    volumes:
+      - ${DEMO_DIR}/models:/models
+
+  calendar-scheduler:
+    environment:
+      SCHEDULER_OAUTH_AUDIENCE: ${SCHEDULER_OAUTH_AUDIENCE:-demo}
+    volumes:
+      - ${DEMO_DIR}/models:/models
+
+  identity-manager:
+    volumes:
+      - ${DEMO_DIR}/models:/models

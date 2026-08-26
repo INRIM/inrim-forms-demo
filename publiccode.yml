@@ -78,11 +78,11 @@ description:
       - Stack Docker Compose con installazione e avvio automatici
     screenshots:
       - >-
+        https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/dashboard.png
+      - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/design.png
       - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/enter_data.png
-      - >-
-        https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/list_submissioins.png
       - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/view_edit_data.png
 organisation:

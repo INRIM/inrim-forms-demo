@@ -58,6 +58,25 @@ Override utili (env):
 Utenti demo (realm Keycloak `backend`), **username = password**: `admin`,
 `user`, `operator`, `manager`.
 
+## Screenshot
+
+Dashboard: la card del form arriva gia' pronta col plugin `demo`, senza
+passare dal builder.
+
+![Dashboard con la card "Modulo Dati Persona"](gallery/dashboard.png)
+
+Builder drag&drop (formio.js): la form si disegna trascinando i campi.
+
+![Form builder](gallery/design.png)
+
+Compilazione della form, tema chiaro.
+
+![Inserimento dati](gallery/enter_data.png)
+
+Stessa form in tema scuro, con la validazione dei campi.
+
+![Modifica dati e validazione](gallery/view_edit_data.png)
+
 ## Struttura
 
 ```
@@ -75,7 +94,7 @@ demo/
 ├── clean_demo.sh             pulizia totale
 └── tests/                    test dello script di provisioning
 service-app/                  checkout di INRIM/service-app (clonato qui, gitignorato)
-gallery/                      screenshot
+gallery/                      screenshot usati in questo README
 ```
 
 Dettagli su architettura, login BFF/Keycloak e porting del plugin:

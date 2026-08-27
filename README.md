@@ -22,6 +22,11 @@ basta clonare questo repo e lanciare lo script.
 > La 1.x di questo progetto (Flask + form builder standalone) e' stata
 > sostituita da service-app; il codice storico resta nella storia git.
 
+## Documentazione
+
+- Demo: <https://inrim.github.io/service-app/demo/>
+- Ozon App (la piattaforma): <https://inrim.github.io/service-app/>
+
 ## Requisiti
 
 Docker Desktop attivo, piu' `git`, `curl`, `jq`, `openssl`. Le immagini
@@ -99,6 +104,18 @@ gallery/                      screenshot usati in questo README
 
 Dettagli su architettura, login BFF/Keycloak e porting del plugin:
 [`demo/README.md`](demo/README.md).
+
+## Nomi dei container
+
+Dalla 3.0 i `container_name` dei compose di service-app sono variabili
+obbligatorie: la demo li valorizza in `demo/.env.demo`
+(`OZON_ENV_APP_CONTAINER_NAME`, `..._DB_...`, `..._MAIL_SENDER_...`,
+`..._CALENDAR_SCHEDULER_...`, `..._IDENTITY_MANAGER_...`,
+`KEYCLOAK_CONTAINER_NAME`) e in `demo/.env.client-demo`
+(`OZON_APP_WEB_CONTAINER_NAME`). Sono anche gli hostname sulla rete Docker:
+cambiandoli vanno allineati `MONGO_URL`, `SCHEDULER_RUN_BASE_URL` e
+`BACKEND_UPSTREAM`. Gli script non contengono nomi fissi. Dettagli in
+[`demo/README.md`](demo/README.md#nomi-dei-container).
 
 ## Segreti
 

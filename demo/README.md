@@ -10,6 +10,11 @@ Avvia in un colpo solo: Keycloak + Mongo + `ozon-env-app` (con companion
 service) + web-client, con il plugin `demo` caricato e 4 utenti di test
 (`admin`, `user`, `operator`, `manager`).
 
+## Documentazione
+
+- Questa demo: <https://inrim.github.io/service-app/demo/>
+- Ozon App (la piattaforma): <https://inrim.github.io/service-app/>
+
 ## Quickstart
 
 ```bash
@@ -180,6 +185,39 @@ Dettagli che contano (se tocchi questi file, la card sparisce):
 Le action generate dal builder avrebbero gli stessi `rec_name`: rifare il
 salvataggio dal builder aggiorna gli stessi record, non li duplica.
 
+## Nomi dei container
+
+Dalla 3.0 i `container_name` non sono piu' scritti nei compose di
+service-app: sono variabili **obbligatorie** (`${...:?}`) lette dai `.env`.
+La demo li valorizza nei suoi template, coi nomi storici:
+
+| Variabile | File | Default demo |
+|---|---|---|
+| `OZON_ENV_APP_CONTAINER_NAME` | `.env.demo` | `ozon-env-app` |
+| `OZON_ENV_APP_DB_CONTAINER_NAME` | `.env.demo` | `ozon-env-app-db` |
+| `OZON_MAIL_SENDER_CONTAINER_NAME` | `.env.demo` | `ozon-env-mail-sender` |
+| `OZON_CALENDAR_SCHEDULER_CONTAINER_NAME` | `.env.demo` | `ozon-env-calendar-scheduler` |
+| `OZON_IDENTITY_MANAGER_CONTAINER_NAME` | `.env.demo` | `ozon-env-identity-manager` |
+| `KEYCLOAK_CONTAINER_NAME` | `.env.demo` | `ozon-env-keycloak` (servizio definito da `docker-compose.demo.yml`) |
+| `OZON_APP_WEB_CONTAINER_NAME` | `.env.client-demo` | `demo-web` |
+
+I nomi container sono anche **hostname sulla rete Docker**: se li cambi vanno
+aggiornati insieme
+
+- `MONGO_URL` (host = `OZON_ENV_APP_DB_CONTAINER_NAME`),
+- `SCHEDULER_RUN_BASE_URL` (host = `OZON_ENV_APP_CONTAINER_NAME`),
+- `BACKEND_UPSTREAM` in `.env.client-demo` (idem, e' l'upstream di nginx).
+
+Gli script non hanno nomi fissi: `run_demo.sh` legge
+`OZON_ENV_APP_CONTAINER_NAME` dal `.env` generato per `docker exec`/`docker cp`
+(bootstrap + seed gruppi), `clean_demo.sh` legge tutti i nomi dai template per
+la rimozione degli orfani.
+
+`.env.client-demo` tiene anche `CLIENT_NAME=demo` per i compose precedenti,
+che costruivano il nome come `${CLIENT_NAME}-web`: il risultato e' lo stesso
+container `demo-web`, quindi la demo gira sia sul compose nuovo sia su quello
+gia' pubblicato.
+
 ## Login: come e' collegato tutto
 
 Il web-client (`ozon-app-web`, nginx + Angular) sta su una sola origin
@@ -219,6 +257,16 @@ sia sul client web sia sul client M2M: entrambi i token contengono
   errore catturato all'avvio (`Error creation model object map: phoneNumber`)
   e ignorato — il resto del form funziona normalmente. E' una lacuna del
   motore, non uno sbaglio del porting.
+- **mongod e kernel >= 6.19**: su Docker Desktop con VM linuxkit 7.x le
+  immagini mongo 8.0 e 8.3 (quella di default,
+  `ghcr.io/inrim/ozon-env-app/db`, e' mongo 8.3.8) si rifiutano di partire —
+  `MongoDB cannot start: Linux kernel versions 6.19 and newer has a known
+  incompatibility` ([SERVER-121912](https://jira.mongodb.org/browse/SERVER-121912)) —
+  e il container db resta in restart loop: il backend non trova il db e
+  `run_demo.sh` si ferma allo step 7/8. La 8.2 ha il fix: scommenta
+  `OZON_ENV_APP_DB_IMAGE=mongo:8.2` in `demo/.env.demo`, poi
+  `demo/clean_demo.sh && demo/run_demo.sh up`. Lo script, quando il wait sul
+  backend fallisce, stampa i log di app e db e segnala questa causa.
 - **Immagini da GHCR**: `backend/docker-compose.yml` e
   `app/docker-compose.client.example.yml` puntano di default a
   `ghcr.io/inrim/ozon-env-app/*` / `ghcr.io/inrim/ozon-formio`

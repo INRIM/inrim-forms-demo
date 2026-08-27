@@ -55,6 +55,40 @@ set_env_var() {  # file key value
     fi
 }
 
+# I nomi container sono anche hostname sulla rete Docker: gli URL interni
+# vanno riscritti in base ai nomi, altrimenti rinominare un container lascia
+# MONGO_URL/SCHEDULER_RUN_BASE_URL/BACKEND_UPSTREAM a puntare nel vuoto
+# ("Name or service not known").
+host_of() {  # url_o_hostport -> hostname
+    local v="${1#*://}"
+    v="${v%%/*}"
+    printf '%s' "${v%%:*}"
+}
+
+replace_host() {  # url_o_hostport nuovo_host -> stesso valore con host sostituito
+    local value="$1" new_host="$2" scheme="" rest path=""
+    if [[ "$value" == *"://"* ]]; then
+        scheme="${value%%://*}://"
+        value="${value#*://}"
+    fi
+    if [[ "$value" == */* ]]; then
+        path="/${value#*/}"
+        value="${value%%/*}"
+    fi
+    local port=""
+    [[ "$value" == *:* ]] && port=":${value##*:}"
+    printf '%s%s%s%s' "$scheme" "$new_host" "$port" "$path"
+}
+
+sync_host() {  # file key nuovo_host
+    local file="$1" key="$2" new_host="$3" current
+    current="$(get_env_var "$file" "$key")"
+    [[ -z "$current" || -z "$new_host" ]] && return 0
+    if [[ "$(host_of "$current")" != "$new_host" ]]; then
+        set_env_var "$file" "$key" "$(replace_host "$current" "$new_host")"
+    fi
+}
+
 ensure_secret() {  # key -> stampa il valore, generandolo/persistendolo se serve
     local key="$1" val
     val="$(get_env_var "$SECRETS_FILE" "$key")"
@@ -120,6 +154,25 @@ update_service_app() {
     fi
 }
 
+diagnose_backend() {
+    echo >&2
+    echo "--- stato container del progetto $PROJECT ---" >&2
+    compose_backend ps >&2 || true
+    echo "--- ultime righe di log: app ---" >&2
+    docker logs --tail 25 "$(get_env_var "$BACKEND_ENV" OZON_ENV_APP_CONTAINER_NAME)" 2>&1 | tail -25 >&2 || true
+    echo "--- ultime righe di log: db ---" >&2
+    local db_log
+    db_log="$(docker logs --tail 10 "$(get_env_var "$BACKEND_ENV" OZON_ENV_APP_DB_CONTAINER_NAME)" 2>&1 | tail -10 || true)"
+    echo "$db_log" >&2
+    if [[ "$db_log" == *"known incompatibility"* ]]; then
+        echo >&2
+        echo "CAUSA PROBABILE: mongod non parte sul kernel di questa VM Docker (>= 6.19, SERVER-121912)." >&2
+        echo "  Rimedio: scommenta OZON_ENV_APP_DB_IMAGE=mongo:8.2 in demo/.env.demo," >&2
+        echo "  poi demo/clean_demo.sh && demo/run_demo.sh up" >&2
+    fi
+    echo >&2
+}
+
 compose_backend() { docker compose -p "$PROJECT" -f "$BACKEND_COMPOSE" -f "$DEMO_DIR/docker-compose.demo.yml" --env-file "$BACKEND_ENV" "$@"; }
 compose_client()  { docker compose -p "$PROJECT" -f "$CLIENT_COMPOSE" --env-file "$CLIENT_ENV" "$@"; }
 
@@ -182,6 +235,20 @@ for key in KEYCLOAK_CLIENT_SECRET SCHEDULER_OAUTH_CLIENT_SECRET; do
     fi
 done
 cp "$DEMO_DIR/.env.client-demo" "$CLIENT_ENV"
+
+# Unica fonte di verita' per gli hostname interni: i nomi container.
+APP_CONTAINER="$(get_env_var "$BACKEND_ENV" OZON_ENV_APP_CONTAINER_NAME)"
+APP_CONTAINER="${APP_CONTAINER:-ozon-env-app}"
+DB_CONTAINER="$(get_env_var "$BACKEND_ENV" OZON_ENV_APP_DB_CONTAINER_NAME)"
+DB_CONTAINER="${DB_CONTAINER:-ozon-env-app-db}"
+KC_CONTAINER="$(get_env_var "$BACKEND_ENV" KEYCLOAK_CONTAINER_NAME)"
+KC_CONTAINER="${KC_CONTAINER:-keycloak}"
+
+sync_host "$BACKEND_ENV" MONGO_URL "$DB_CONTAINER"
+sync_host "$BACKEND_ENV" SCHEDULER_RUN_BASE_URL "$APP_CONTAINER"
+sync_host "$CLIENT_ENV"  BACKEND_UPSTREAM "$APP_CONTAINER"
+echo "hostname interni: mongo=$(get_env_var "$BACKEND_ENV" MONGO_URL) backend=$(get_env_var "$CLIENT_ENV" BACKEND_UPSTREAM)"
+
 mkdir -p "$DEMO_DIR/models"
 
 step "4/8 avvio backend (keycloak + db + app + companion services)"
@@ -223,15 +290,18 @@ for i in $(seq 1 60); do
     if curl -fs -o /dev/null -w '%{http_code}' "http://localhost:${OZON_APP_PORT:-7999}/login" | grep -q 302; then
         break
     fi
-    [[ $i -eq 60 ]] && die "backend non risponde dopo 60 tentativi"
+    [[ $i -eq 60 ]] && { diagnose_backend; die "backend non risponde dopo 60 tentativi su http://localhost:${OZON_APP_PORT:-7999}/login"; }
     sleep 2
 done
 echo "Backend pronto."
 
-# bootstrap plugin + gruppi demo (admin M2M, user/operator/manager)
-docker exec ozon-env-app uv run python bootstrap.py --admin admin
-docker cp "$DEMO_DIR/seed_groups.py" ozon-env-app:/app/seed_groups.py
-docker exec ozon-env-app uv run python seed_groups.py
+# bootstrap plugin + gruppi demo (admin M2M, user/operator/manager).
+# Il nome del container arriva dal .env generato: dalla 3.0 i container_name
+# dei compose sono variabili obbligatorie, niente piu' nomi fissi.
+APP_CONTAINER="${OZON_ENV_APP_CONTAINER_NAME:-ozon-env-app}"
+docker exec "$APP_CONTAINER" uv run python bootstrap.py --admin admin
+docker cp "$DEMO_DIR/seed_groups.py" "$APP_CONTAINER:/app/seed_groups.py"
+docker exec "$APP_CONTAINER" uv run python seed_groups.py
 
 step "8/8 avvio web-client"
 # --force-recreate: nginx risolve l'IP di "app" all'avvio e non lo aggiorna;

@@ -22,7 +22,7 @@ dependsOn:
       versionMin: '26.0'
 description:
   it:
-    documentation: 'https://github.com/INRIM/inrim-forms-demo/blob/master/demo/README.md'
+    documentation: 'https://inrim.github.io/service-app/demo/'
     features:
       - >-
         Form builder Drag&Drop (formio.js), per disegnare i moduli senza
@@ -102,6 +102,12 @@ description:
 
       Il progetto e' a scopo di demo e di riferimento per chi costruisce
       applicazioni su Service App.
+
+
+      Documentazione: la guida della demo e' su
+      [inrim.github.io/service-app/demo](https://inrim.github.io/service-app/demo/),
+      la documentazione della piattaforma Ozon App su
+      [inrim.github.io/service-app](https://inrim.github.io/service-app/).
     screenshots:
       - >-
         https://raw.githubusercontent.com/INRIM/inrim-forms-demo/master/gallery/dashboard.png

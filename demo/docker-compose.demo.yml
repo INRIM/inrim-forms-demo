@@ -15,7 +15,7 @@
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    container_name: ozon-env-keycloak
+    container_name: ${KEYCLOAK_CONTAINER_NAME:-ozon-env-keycloak}
     # start-dev = comodo per bootstrap/dev (H2 embedded). In produzione:
     # `start` + DB esterno (KC_DB_*) + KC_HOSTNAME reale + TLS, non questo.
     command: ["start-dev", "--http-port=8080"]

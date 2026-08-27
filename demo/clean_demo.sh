@@ -49,10 +49,22 @@ else
 fi
 
 step "Rimuovo eventuali container demo rimasti orfani per nome"
+# I nomi arrivano dai template (dalla 3.0 i container_name sono variabili
+# obbligatorie dei compose); i default coprono chi ha girato prima.
+get_name() {  # file key default
+    local val
+    val="$(grep -E "^${2}=" "$1" 2>/dev/null | tail -1 | cut -d= -f2- || true)"
+    printf '%s' "${val:-$3}"
+}
 docker rm -f \
-    ozon-env-app ozon-env-app-db ozon-env-keycloak \
-    ozon-env-mail-sender ozon-env-calendar-scheduler ozon-env-identity-manager \
-    demo-web 2>/dev/null || true
+    "$(get_name "$DEMO_DIR/.env.demo" OZON_ENV_APP_CONTAINER_NAME ozon-env-app)" \
+    "$(get_name "$DEMO_DIR/.env.demo" OZON_ENV_APP_DB_CONTAINER_NAME ozon-env-app-db)" \
+    "$(get_name "$DEMO_DIR/.env.demo" KEYCLOAK_CONTAINER_NAME ozon-env-keycloak)" \
+    "$(get_name "$DEMO_DIR/.env.demo" OZON_MAIL_SENDER_CONTAINER_NAME ozon-env-mail-sender)" \
+    "$(get_name "$DEMO_DIR/.env.demo" OZON_CALENDAR_SCHEDULER_CONTAINER_NAME ozon-env-calendar-scheduler)" \
+    "$(get_name "$DEMO_DIR/.env.demo" OZON_IDENTITY_MANAGER_CONTAINER_NAME ozon-env-identity-manager)" \
+    "$(get_name "$DEMO_DIR/.env.client-demo" OZON_APP_WEB_CONTAINER_NAME demo-web)" \
+    2>/dev/null || true
 
 step "Rimuovo i volumi del progetto rimasti orfani"
 docker volume rm -f \

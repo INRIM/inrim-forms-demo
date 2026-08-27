@@ -118,7 +118,7 @@
     "modal": false,
     "title": "Nuovo",
     "admin": false,
-    "write_access": false,
+    "write_access": true,
     "no_public_user": false,
     "user_function": "",
     "groups": [
@@ -192,7 +192,7 @@
     "modal": false,
     "title": "Salva",
     "admin": false,
-    "write_access": false,
+    "write_access": true,
     "no_public_user": false,
     "user_function": "",
     "groups": [

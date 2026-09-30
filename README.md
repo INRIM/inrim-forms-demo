@@ -58,7 +58,7 @@ Override utili (env):
 |---|---|---|
 | Web app | http://localhost:4200 | utenti demo, sotto |
 | Backend API | http://localhost:7999 | — |
-| Keycloak admin console | http://localhost:8082 | `admin` / password generata (stampata a fine run, salvata in `demo/.env.secrets`) |
+| Keycloak admin console | http://keycloak.localhost:8082 | `admin` / password generata (stampata a fine run, salvata in `demo/.env.secrets`) |
 
 Utenti demo (realm Keycloak `backend`), **username = password**: `admin`,
 `user`, `operator`, `manager`.

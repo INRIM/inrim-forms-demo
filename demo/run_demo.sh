@@ -257,9 +257,9 @@ compose_backend up -d
 # shellcheck disable=SC1091
 set -a; source "$BACKEND_ENV"; set +a
 
-step "5/8 attendo Keycloak (${KEYCLOAK_SERVER_URL_PUBLIC})"
+step "5/8 attendo Keycloak (${KEYCLOAK_SERVER_URL})"
 for i in $(seq 1 60); do
-    if curl -fs -o /dev/null "${KEYCLOAK_SERVER_URL_PUBLIC}/realms/master"; then
+    if curl -fs -o /dev/null "${KEYCLOAK_SERVER_URL}/realms/master"; then
         break
     fi
     [[ $i -eq 60 ]] && die "Keycloak non risponde dopo 60 tentativi"
@@ -313,7 +313,7 @@ step "Demo pronta"
 cat <<EOF
 
   Web app:   ${SITE_URL:-http://localhost:4200}
-  Keycloak:  ${KEYCLOAK_SERVER_URL_PUBLIC} (admin / ${KEYCLOAK_ADMIN_PASSWORD})
+  Keycloak:  ${KEYCLOAK_SERVER_URL} (admin / ${KEYCLOAK_ADMIN_PASSWORD})
   Backend:   http://localhost:${OZON_APP_PORT:-7999}
 
   Utenti demo (username = password): admin, user, operator, manager

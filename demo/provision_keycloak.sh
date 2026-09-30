@@ -14,7 +14,7 @@
 # Richiede: curl, jq
 set -euo pipefail
 
-KC="${KEYCLOAK_SERVER_URL_PUBLIC:-http://localhost:8082}"
+KC="${KEYCLOAK_SERVER_URL:-http://keycloak.localhost:8082}"
 KC_ADMIN_USER="${KEYCLOAK_ADMIN_USER:-admin}"
 KC_ADMIN_PASSWORD="${KEYCLOAK_ADMIN_PASSWORD:?serve KEYCLOAK_ADMIN_PASSWORD (la esporta run_demo.sh dal .env generato)}"
 REALM="${KEYCLOAK_REALM:-backend}"

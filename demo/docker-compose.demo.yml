@@ -25,11 +25,10 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       # Senza un hostname fisso, Keycloak costruisce `iss` dall'Host della
-      # richiesta: il browser (localhost:8082) ottiene un issuer, i
-      # container che chiamano keycloak:8080 ne ottengono un altro, e
-      # l'app — che confronta con KEYCLOAK_SERVER_URL_PUBLIC — rifiuta i
-      # token dei servizi M2M con "Invalid issuer".
-      KC_HOSTNAME: ${KEYCLOAK_SERVER_URL_PUBLIC:-http://localhost:8082}
+      # richiesta: chi lo chiama con un altro nome (es. i servizi M2M su
+      # keycloak:8080) otterrebbe un issuer diverso da KEYCLOAK_SERVER_URL
+      # e l'app rifiuterebbe i token con "Invalid issuer".
+      KC_HOSTNAME: ${KEYCLOAK_SERVER_URL:-http://keycloak.localhost:8082}
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "false"
     volumes:
       - keycloak_data:/opt/keycloak/data
@@ -42,6 +41,11 @@ services:
   app:
     environment:
       OZON_TOKEN_AUDIENCE: ${OZON_TOKEN_AUDIENCE:-demo}
+    # KEYCLOAK_SERVER_URL e' lo stesso URL del browser (keycloak.localhost
+    # sulla porta pubblicata): dal container lo si raggiunge passando per
+    # l'host, cosi' app e browser vedono lo stesso Keycloak con lo stesso iss.
+    extra_hosts:
+      - "keycloak.localhost:host-gateway"
     depends_on:
       - keycloak
     volumes:

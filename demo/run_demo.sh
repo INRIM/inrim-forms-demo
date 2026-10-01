@@ -228,7 +228,7 @@ cp "$DEMO_DIR/.env.demo" "$BACKEND_ENV"
 for key in MONGO_PASS SESSION_SECRET KEYCLOAK_ADMIN_PASSWORD; do
     set_env_var "$BACKEND_ENV" "$key" "$(ensure_secret "$key")"
 done
-for key in KEYCLOAK_CLIENT_SECRET SCHEDULER_OAUTH_CLIENT_SECRET; do
+for key in KEYCLOAK_CLIENT_SECRET OZON_M2M_CLIENT_SECRET; do
     val="$(get_env_var "$SECRETS_FILE" "$key")"
     if [[ -n "$val" ]]; then
         set_env_var "$BACKEND_ENV" "$key" "$val"
@@ -267,18 +267,18 @@ for i in $(seq 1 60); do
 done
 echo "Keycloak pronto."
 
-step "6/8 provisioning Keycloak (realm/client web + client M2M calendar-scheduler + utenti demo)"
+step "6/8 provisioning Keycloak (realm/client web + client M2M condiviso + utenti demo)"
 # shellcheck disable=SC1091
 set -a; source "$CLIENT_ENV"; set +a
 PROVISION_OUT="$("$DEMO_DIR/provision_keycloak.sh")"
 echo "$PROVISION_OUT" >&2
 SECRET="$(echo "$PROVISION_OUT" | grep '^KEYCLOAK_CLIENT_SECRET=' | cut -d= -f2-)"
-SCHED_SECRET="$(echo "$PROVISION_OUT" | grep '^SCHEDULER_OAUTH_CLIENT_SECRET=' | cut -d= -f2-)"
-[[ -n "$SECRET" && -n "$SCHED_SECRET" ]] || die "provisioning Keycloak senza secret in output"
+M2M_SECRET="$(echo "$PROVISION_OUT" | grep '^OZON_M2M_CLIENT_SECRET=' | cut -d= -f2-)"
+[[ -n "$SECRET" && -n "$M2M_SECRET" ]] || die "provisioning Keycloak senza secret in output"
 
 # I secret vanno solo nel .env generato e in demo/.env.secrets (gitignorato),
 # mai nel template demo/.env.demo che e' versionato.
-for pair in "KEYCLOAK_CLIENT_SECRET=$SECRET" "SCHEDULER_OAUTH_CLIENT_SECRET=$SCHED_SECRET"; do
+for pair in "KEYCLOAK_CLIENT_SECRET=$SECRET" "OZON_M2M_CLIENT_SECRET=$M2M_SECRET"; do
     set_env_var "$BACKEND_ENV" "${pair%%=*}" "${pair#*=}"
     set_env_var "$SECRETS_FILE" "${pair%%=*}" "${pair#*=}"
 done

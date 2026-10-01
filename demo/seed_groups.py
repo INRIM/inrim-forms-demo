@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Add the demo test users (user/operator/manager) into their group_users
-record for app_code=demo, plus the calendar-scheduler M2M service account
+record for app_code=demo, plus the shared M2M client service account
 into the admin group (required by the ACL for its /client/run/* writes).
 bootstrap.py only seeds 'admin' with the human admin uid; this covers the
 rest. Run inside the app container:
@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 log = logging.getLogger(__name__)
 
 GROUP_MEMBERS = {
-    "admin": ["service-account-calendar-scheduler"],
+    "admin": ["service-account-ozon-m2m"],
     "user": ["user"],
     "operator": ["operator"],
     "manager": ["manager"],

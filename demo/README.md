@@ -80,10 +80,10 @@ demo/
 ├── .env.client-demo          template env del web-client (reso in ../service-app/app/.env)
 ├── .env.secrets              segreti locali generati (gitignorato, creato al 1o run)
 ├── docker-compose.demo.yml   override: Keycloak + plugin/ in /plugins/demo
-├── provision_keycloak.sh     realm + client web + client M2M calendar-scheduler
+├── provision_keycloak.sh     realm + client web + client M2M condiviso (ozon-m2m)
 │                             + utenti Keycloak (idempotente)
 ├── seed_groups.py            aggiunge user/operator/manager ai gruppi group_users
-│                             + il service account calendar-scheduler al gruppo admin
+│                             + il service account ozon-m2m al gruppo admin
 ├── run_demo.sh               orchestratore: fa tutto quanto sopra in ordine
 ├── clean_demo.sh             pulizia totale
 └── tests/                    test dello script di provisioning (unittest)
@@ -235,20 +235,35 @@ richiesto): vengono da `group_users` in Mongo, keyed per `<group>-<app_code>`.
 `bootstrap.py` (nell'immagine) seeda solo il gruppo `admin`; `seed_groups.py`
 copre `user`/`operator`/`manager`.
 
-### calendar-scheduler: anche lui via Keycloak (M2M)
+### Client M2M condiviso (calendar-scheduler e futuri service)
 
 `calendar-scheduler` non e' un utente umano: chiama l'endpoint
 `/client/run/calendar_tasks/*` del backend come client `client_credentials`
-(machine-to-machine). Serve quindi un secondo client Keycloak, service
-account, separato dal client web (`provision_keycloak.sh` lo crea:
-`calendar-scheduler`, `serviceAccountsEnabled: true`). Il suo utente
-`service-account-calendar-scheduler` deve stare nel gruppo `admin` per
-`app_code=demo` altrimenti l'ACL nega le scritture — `seed_groups.py` lo
-aggiunge. L'override della demo imposta `OZON_TOKEN_AUDIENCE=demo` sul
-backend e `SCHEDULER_OAUTH_AUDIENCE=demo` sullo scheduler. Il provisioning
-Keycloak configura quindi, in modo idempotente, un audience mapper `demo`
-sia sul client web sia sul client M2M: entrambi i token contengono
-`demo` nel claim `aud`.
+(machine-to-machine). La demo usa il **client M2M condiviso** dello stack,
+lo stesso che useranno tutti i service che chiamano il backend:
+`provision_keycloak.sh` crea `ozon-m2m` (`serviceAccountsEnabled: true`) e
+`run_demo.sh` ne mette il secret in `OZON_M2M_CLIENT_SECRET`.
+
+Lo scheduler ricava il resto da variabili che lo stack ha gia':
+
+- token URL da `KEYCLOAK_SERVER_URL` + `KEYCLOAK_REALM`
+  (`keycloak.localhost:8082`, raggiunto dal container via `extra_hosts`
+  come l'app);
+- `aud` richiesto = `OZON_TOKEN_AUDIENCE=demo`, quello che il backend
+  verifica. Il provisioning configura in modo idempotente un audience
+  mapper `demo` sia sul client web sia su `ozon-m2m`.
+
+L'utente `service-account-ozon-m2m` deve stare nel gruppo `admin` per
+`app_code=demo`, altrimenti l'ACL nega le scritture: `seed_groups.py` lo
+aggiunge. Le `SCHEDULER_OAUTH_*` restano disponibili come override per un
+client dedicato, ma la demo non le usa.
+
+Installazione esistente (client `calendar-scheduler`): non serve il reset.
+Al prossimo `run_demo.sh up` il provisioning crea `ozon-m2m` accanto al
+vecchio client e `seed_groups.py` aggiunge il nuovo service account in
+`admin`. Il vecchio client e la riga `SCHEDULER_OAUTH_CLIENT_SECRET` in
+`demo/.env.secrets` restano inutilizzati: si eliminano a mano, oppure con
+`run_demo.sh reset`.
 
 ## Problemi noti
 
@@ -295,7 +310,7 @@ segnaposto**:
   Mongo e Keycloak sono gia' inizializzati con quelle credenziali,
   rigenerarle romperebbe il login;
 - `__PROVISION__` → `KEYCLOAK_CLIENT_SECRET`,
-  `SCHEDULER_OAUTH_CLIENT_SECRET`: li stampa `provision_keycloak.sh`, li
+  `OZON_M2M_CLIENT_SECRET`: li stampa `provision_keycloak.sh`, li
   scrive `run_demo.sh` nel `.env` generato e in `demo/.env.secrets`.
 
 Gli `.env` operativi (`service-app/backend/.env`, `service-app/app/.env`)

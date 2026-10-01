@@ -12,7 +12,7 @@ PROVISION = ROOT / "demo" / "provision_keycloak.sh"
 
 
 class ProvisionKeycloakTest(unittest.TestCase):
-    def test_enables_demo_audience_for_web_and_scheduler_clients(self):
+    def test_enables_demo_audience_for_web_and_m2m_clients(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             curl_log = tmp_path / "curl.jsonl"
@@ -41,15 +41,15 @@ class ProvisionKeycloakTest(unittest.TestCase):
                             echo '{"access_token":"admin-token"}' ;;
                         *'/clients?clientId=backend-web')
                             echo '[{"id":"web-uuid"}]' ;;
-                        *'/clients?clientId=calendar-scheduler')
-                            echo '[{"id":"scheduler-uuid"}]' ;;
+                        *'/clients?clientId=ozon-m2m')
+                            echo '[{"id":"m2m-uuid"}]' ;;
                         */clients/web-uuid/client-secret)
                             echo '{"value":"web-secret"}' ;;
-                        */clients/scheduler-uuid/client-secret)
-                            echo '{"value":"scheduler-secret"}' ;;
+                        */clients/m2m-uuid/client-secret)
+                            echo '{"value":"m2m-secret"}' ;;
                         */protocol-mappers/models)
                             echo '[]' ;;
-                        *'/users?username=service-account-calendar-scheduler&exact=true')
+                        *'/users?username=service-account-ozon-m2m&exact=true')
                             echo '[{"id":"service-account-uuid"}]' ;;
                         *'/users?username='*)
                             echo '[{"id":"user-uuid"}]' ;;
@@ -79,7 +79,7 @@ class ProvisionKeycloakTest(unittest.TestCase):
 
             self.assertIn("KEYCLOAK_CLIENT_SECRET=web-secret", result.stdout)
             self.assertIn(
-                "SCHEDULER_OAUTH_CLIENT_SECRET=scheduler-secret", result.stdout
+                "OZON_M2M_CLIENT_SECRET=m2m-secret", result.stdout
             )
             requests = [
                 json.loads(line) for line in curl_log.read_text().splitlines()
@@ -92,7 +92,7 @@ class ProvisionKeycloakTest(unittest.TestCase):
             ]
             self.assertEqual(2, len(mapper_requests))
             self.assertEqual(
-                {"web-uuid", "scheduler-uuid"},
+                {"web-uuid", "m2m-uuid"},
                 {
                     request["url"].split("/clients/", 1)[1].split("/", 1)[0]
                     for request in mapper_requests

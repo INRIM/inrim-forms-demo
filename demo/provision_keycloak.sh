@@ -9,7 +9,7 @@
 #
 # Stampa su stdout due righe:
 #   KEYCLOAK_CLIENT_SECRET=<value>            (client web, auth-code)
-#   SCHEDULER_OAUTH_CLIENT_SECRET=<value>      (client M2M calendar-scheduler)
+#   OZON_M2M_CLIENT_SECRET=<value>             (client M2M condiviso dai service)
 #
 # Richiede: curl, jq
 set -euo pipefail
@@ -22,7 +22,7 @@ CLIENT_ID="${KEYCLOAK_CLIENT_ID:-backend-web}"
 SITE_URL="${SITE_URL:-http://localhost:4200}"
 REDIRECT_URI="${SITE_URL}/auth/callback"
 WEB_ORIGIN="${SITE_URL}"
-SCHEDULER_CLIENT_ID="${SCHEDULER_OAUTH_CLIENT_ID:-calendar-scheduler}"
+M2M_CLIENT_ID="${OZON_M2M_CLIENT_ID:-ozon-m2m}"
 # URL che KEYCLOAK chiama quando una sessione termina (logout utente,
 # logout amministrativo, scadenza idle). Va risolto DALLA rete dei
 # container, non dal browser: e' il server Keycloak a fare il POST.
@@ -133,27 +133,27 @@ SECRET="$(curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/clients/${CLIENT_UU
 ensure_audience_mapper "$CLIENT_UUID" "$CLIENT_ID"
 ensure_backchannel_logout "$CLIENT_UUID" "$CLIENT_ID"
 
-# --- client M2M per calendar-scheduler (client_credentials, service account) ---
-SCHED_UUID="$(curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/clients?clientId=${SCHEDULER_CLIENT_ID}" | jq -r '.[0].id // empty')"
-if [[ -n "$SCHED_UUID" ]]; then
-    log "client '${SCHEDULER_CLIENT_ID}' already exists"
+# --- client M2M condiviso dai service che chiamano il backend (client_credentials, service account) ---
+M2M_UUID="$(curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/clients?clientId=${M2M_CLIENT_ID}" | jq -r '.[0].id // empty')"
+if [[ -n "$M2M_UUID" ]]; then
+    log "client '${M2M_CLIENT_ID}' already exists"
 else
     LOCATION="$(curl -fsi "${auth[@]}" -X POST "${KC}/admin/realms/${REALM}/clients" -d "$(jq -n \
-        --arg cid "$SCHEDULER_CLIENT_ID" \
+        --arg cid "$M2M_CLIENT_ID" \
         '{clientId:$cid, protocol:"openid-connect", publicClient:false, standardFlowEnabled:false, directAccessGrantsEnabled:false, serviceAccountsEnabled:true}')" \
         | grep -i '^location:')"
-    SCHED_UUID="${LOCATION##*/}"
-    SCHED_UUID="${SCHED_UUID//$'\r'/}"
-    log "client '${SCHEDULER_CLIENT_ID}' created (service account)"
+    M2M_UUID="${LOCATION##*/}"
+    M2M_UUID="${M2M_UUID//$'\r'/}"
+    log "client '${M2M_CLIENT_ID}' created (service account)"
 fi
-SCHED_SECRET="$(curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/clients/${SCHED_UUID}/client-secret" | jq -r '.value')"
-ensure_audience_mapper "$SCHED_UUID" "$SCHEDULER_CLIENT_ID"
+M2M_SECRET="$(curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/clients/${M2M_UUID}/client-secret" | jq -r '.value')"
+ensure_audience_mapper "$M2M_UUID" "$M2M_CLIENT_ID"
 
 # service-account-<clientId> deve essere admin per app_code=demo (group_users),
 # altrimenti l'ACL nega le scritture del backend all'endpoint /client/run/*.
-SCHED_SA_USERNAME="service-account-${SCHEDULER_CLIENT_ID}"
-if ! curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/users?username=${SCHED_SA_USERNAME}&exact=true" | jq -e '.[0].id' >/dev/null; then
-    log "warning: utente service account '${SCHED_SA_USERNAME}' non trovato (verra' creato al primo avvio del client M2M)"
+M2M_SA_USERNAME="service-account-${M2M_CLIENT_ID}"
+if ! curl -fs "${auth[@]}" "${KC}/admin/realms/${REALM}/users?username=${M2M_SA_USERNAME}&exact=true" | jq -e '.[0].id' >/dev/null; then
+    log "warning: utente service account '${M2M_SA_USERNAME}' non trovato (verra' creato al primo avvio del client M2M)"
 fi
 
 # --- users ---
@@ -180,4 +180,4 @@ for username in "${USERS[@]}"; do
 done
 
 echo "KEYCLOAK_CLIENT_SECRET=${SECRET}"
-echo "SCHEDULER_OAUTH_CLIENT_SECRET=${SCHED_SECRET}"
+echo "OZON_M2M_CLIENT_SECRET=${M2M_SECRET}"

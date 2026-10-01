@@ -57,8 +57,10 @@ services:
       - ${DEMO_DIR}/models:/models
 
   calendar-scheduler:
-    environment:
-      SCHEDULER_OAUTH_AUDIENCE: ${SCHEDULER_OAUTH_AUDIENCE:-demo}
+    # Token URL ricavato da KEYCLOAK_SERVER_URL (keycloak.localhost sulla
+    # porta pubblicata): come per l'app, lo si raggiunge passando dall'host.
+    extra_hosts:
+      - "keycloak.localhost:host-gateway"
     volumes:
       - ${DEMO_DIR}/models:/models
 
